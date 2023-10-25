@@ -11,11 +11,11 @@ app.use(express.json());
 
 const connectToDb = async () => {
   try {
-    await mongoose.connect(process.env.MONGOURL);
+    await mongoose.connect("mongodb+srv://basalingappaitagii:anil@cluster0.c9arqba.mongodb.net/?retryWrites=true&w=majority");
     console.log("Connected to Mongo");
   } catch (e) {
     console.log(e);
-    console.log("error while connectig to mongo db");
+    console.log("error while connectig to mongo db",process.env.MONGOURL);
   }
 };
 

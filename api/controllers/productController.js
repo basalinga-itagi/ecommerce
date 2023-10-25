@@ -16,14 +16,19 @@ export const createProduct = async (req, res, next) => {
 
 export const getAllProducts = async (req, res, next) => {
   try {
-    const queryObj = { ...req.qurey };
-    console.log(queryObj);
+    const queryObj = { ...req.query };
 
-    JSON.stringify(queryObj);
+    //filtering
+    let qryStr = JSON.stringify(queryObj);
+    qryStr = qryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log("qryStr", qryStr)
+    const produts = await Product.find(JSON.parse(qryStr));
 
-    const produts = await Product.find(req.query);
+    //sorting
+    
     res.status(200).json(produts);
   } catch (err) {
+    console.log(err)
     next(createError(500, "Error while fetching  all products"));
   }
 };
