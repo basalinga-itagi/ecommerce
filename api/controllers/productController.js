@@ -18,17 +18,38 @@ export const getAllProducts = async (req, res, next) => {
   try {
     const queryObj = { ...req.query };
 
+    //
+    const excludeFields = ["page", "sort", "limit"];
+    excludeFields.forEach((field) => delete queryObj[field]);
+
     //filtering
     let qryStr = JSON.stringify(queryObj);
     qryStr = qryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    console.log("qryStr", qryStr)
-    const produts = await Product.find(JSON.parse(qryStr));
+    console.log("qryStr", qryStr);
+    let query = Product.find(JSON.parse(qryStr));
 
     //sorting
-    
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    //pagination
+
+    if (req.query.page && req.query.limit) {
+      const page = req.query.page || 1;
+      const limit = req.query.limit;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      query = query.skip(startIndex).limit(limit);
+    }
+
+    const produts = await query;
     res.status(200).json(produts);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     next(createError(500, "Error while fetching  all products"));
   }
 };
