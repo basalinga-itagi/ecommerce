@@ -14,6 +14,7 @@ const userSchema = new Schema(
     isBlocked: { type: Boolean, default: false },
     address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    totalbloglikes: { type: Array },
   },
   {
     timestamps: true,

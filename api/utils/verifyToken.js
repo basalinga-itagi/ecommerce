@@ -27,6 +27,10 @@ export const verifyToken = async (req, res, next) => {
   }
 };
 
+// export const verifyUser = async (req, res, next) => {
+
+// };
+
 export const verifyAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
     console.log("success", req.user);

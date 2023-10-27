@@ -43,6 +43,10 @@ export const getAllProducts = async (req, res, next) => {
       const limit = req.query.limit;
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
+      const productCount = await Product.countDocuments();
+      if (startIndex >= productCount) {
+        throw new Error("This page doesn't exist");
+      }
       query = query.skip(startIndex).limit(limit);
     }
 
