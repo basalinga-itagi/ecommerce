@@ -1,4 +1,5 @@
 import Product from "../models/Product.js";
+import User from "../models/User.js";
 import { createError } from "../utils/error.js";
 
 export const createProduct = async (req, res, next) => {
@@ -82,5 +83,30 @@ export const updateProduct = async (req, res, next) => {
     res.status(200).json(updatedProduct);
   } catch (err) {
     next(createError(500, "Error while fetching  all products"));
+  }
+};
+
+export const addToWishList = async (req, res, next) => {
+  try {
+    const userId = req?.user?._id;
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return next(createError(404, "product not found"));
+    } else {
+      const updateduser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $push: { wishlist: req.params.id },
+        },
+        {
+          new: true,
+        }
+      );
+      console.log(updateduser);
+      res.status(200).json(updateduser);
+    }
+  } catch (err) {
+    console.log("Error while adding to wish list", err);
+    return next(createError(500, "Error while adding to wish list"));
   }
 };
