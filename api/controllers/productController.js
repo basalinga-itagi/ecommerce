@@ -135,11 +135,11 @@ export const ratingProduct = async (req, res, next) => {
     const userId = req?.user?._id;
     const { star, productId } = req.body;
     const product = await Product.findById(productId);
-    console.log(" product", product);
+    // console.log(" product", product);
     const alreadyStarproduct = product.rating.find(
       (productRating) => productRating.postedBy.toString() === userId.toString()
     );
-    console.log("star product", alreadyStarproduct);
+    // console.log("star product", alreadyStarproduct);
     if (alreadyStarproduct) {
       const updatedStarProduct = await Product.updateOne(
         {
@@ -152,7 +152,7 @@ export const ratingProduct = async (req, res, next) => {
           new: true,
         }
       );
-      res.status(200).json(updatedStarProduct);
+      // res.status(200).json(updatedStarProduct);
     } else {
       const rateProduct = await Product.findByIdAndUpdate(
         productId,
@@ -168,8 +168,24 @@ export const ratingProduct = async (req, res, next) => {
           new: true,
         }
       );
-      res.status(200).json(rateProduct);
     }
+    const totalRatings = product.rating.length;
+    let ratingSum = product.rating.reduce(
+      (acc, cur, index) => acc + cur.star,
+      0
+    );
+    console.log("ratingSum", ratingSum);
+    let actualRatings = Math.round(ratingSum / totalRatings);
+    let updatedTotalRatings = await Product.findByIdAndUpdate(
+      productId,
+      {
+        totalRatings: actualRatings,
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json(updatedTotalRatings);
   } catch (err) {
     console.log("Error while adding to stars", err);
     return next(createError(500, "Error while adding to stars to product"));
