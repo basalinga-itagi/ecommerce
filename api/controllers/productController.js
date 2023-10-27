@@ -93,20 +93,85 @@ export const addToWishList = async (req, res, next) => {
     if (!product) {
       return next(createError(404, "product not found"));
     } else {
-      const updateduser = await User.findByIdAndUpdate(
-        userId,
+      const user = await User.findById(userId);
+      let isProductAlredyWishlist = user.wishlist.find(
+        (wishlistproduct) =>
+          wishlistproduct.toString() === req.params.id.toString()
+      );
+      if (!isProductAlredyWishlist) {
+        const updateduser = await User.findByIdAndUpdate(
+          userId,
+          {
+            $push: { wishlist: req.params.id },
+          },
+          {
+            new: true,
+          }
+        );
+        console.log(updateduser);
+        res.status(200).json(updateduser);
+      } else {
+        const updateduser = await User.findByIdAndUpdate(
+          userId,
+          {
+            $pull: { wishlist: req.params.id },
+          },
+          {
+            new: true,
+          }
+        );
+        console.log(updateduser);
+        res.status(200).json(updateduser);
+      }
+    }
+  } catch (err) {
+    console.log("Error while adding to wish list", err);
+    return next(createError(500, "Error while adding to wish list"));
+  }
+};
+
+export const ratingProduct = async (req, res, next) => {
+  try {
+    const userId = req?.user?._id;
+    const { star, productId } = req.body;
+    const product = await Product.findById(productId);
+    console.log(" product", product);
+    const alreadyStarproduct = product.rating.find(
+      (productRating) => productRating.postedBy.toString() === userId.toString()
+    );
+    console.log("star product", alreadyStarproduct);
+    if (alreadyStarproduct) {
+      const updatedStarProduct = await Product.updateOne(
         {
-          $push: { wishlist: req.params.id },
+          rating: { $elemMatch: alreadyStarproduct },
+        },
+        {
+          $set: { "rating.$.star": star },
         },
         {
           new: true,
         }
       );
-      console.log(updateduser);
-      res.status(200).json(updateduser);
+      res.status(200).json(updatedStarProduct);
+    } else {
+      const rateProduct = await Product.findByIdAndUpdate(
+        productId,
+        {
+          $push: {
+            rating: {
+              star: star,
+              postedBy: userId,
+            },
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json(rateProduct);
     }
   } catch (err) {
-    console.log("Error while adding to wish list", err);
-    return next(createError(500, "Error while adding to wish list"));
+    console.log("Error while adding to stars", err);
+    return next(createError(500, "Error while adding to stars to product"));
   }
 };
