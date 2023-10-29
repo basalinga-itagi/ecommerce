@@ -1,6 +1,8 @@
 import Product from "../models/Product.js";
 import User from "../models/User.js";
+import cloudinaryImageUpload from "../utils/cloudinary.js";
 import { createError } from "../utils/error.js";
+import fs from "fs";
 
 export const createProduct = async (req, res, next) => {
   try {
@@ -191,4 +193,30 @@ export const ratingProduct = async (req, res, next) => {
     console.log("Error while adding to stars", err);
     return next(createError(500, "Error while adding to stars to product"));
   }
+};
+
+export const uploadImages = async (req, res, next) => {
+  const { id } = req.params;
+  const files = req.files;
+  // console.log(files);
+  const urls = [];
+  const uploader = (path) => cloudinaryImageUpload(path, "images");
+  for (const file of files) {
+    const { path } = file;
+    const newPath = await uploader(path);
+    urls.push(newPath);
+    fs.unlinkSync(path);
+  }
+  const findProduct = await Product.findByIdAndUpdate(
+    id,
+    {
+      images: urls.map((file) => {
+        return file;
+      }),
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(200).json(findProduct);
 };

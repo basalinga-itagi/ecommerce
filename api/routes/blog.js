@@ -14,6 +14,11 @@ router.post("/create", createBlog);
 router.get("/", getAllBlogs);
 router.get("/:id", getBlogById);
 router.put("/update/:id", updateBlog);
+// router.put(
+//   "/uploadblogimage/:id",
+//   uploadImage.array("images", 12),
+//   uploadImages
+// );
 router.post("/bloglike/:id", verifyToken, likesBlog);
 
 export default router;

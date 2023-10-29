@@ -91,3 +91,8 @@ export const likesBlog = async (req, res, next) => {
     console.log("like blog err", err);
   }
 };
+
+export const uploadBlogImages = async (req, res, next) => {
+  try {
+  } catch (err) {}
+};

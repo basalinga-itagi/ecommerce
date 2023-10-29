@@ -37,7 +37,7 @@ var ProductSchema = new mongoose.Schema(
       required: true,
       //   enum: ["Apple", "Samsumg", "Lenovo"],
     },
-    images: { type: Array },
+    images: [],
     color: {
       type: String,
       //  enum: ["Black", "Brown", "Red"]
