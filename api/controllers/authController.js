@@ -5,13 +5,14 @@ import { createError } from "../utils/error.js";
 
 export const signUp = async (req, res, next) => {
   try {
-    const { username, email, password, mobile } = req.body;
+    const { username, email, password, mobile, address } = req.body;
     console.log(username, email, password, mobile);
     var hashPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
       username,
       email,
       mobile,
+      address,
       password: hashPassword,
     });
     const savedUser = await newUser.save();

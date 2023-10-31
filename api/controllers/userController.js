@@ -51,3 +51,14 @@ export const getUser = async (req, res, next) => {
     next(createError(500, "Problemw while fetching user"));
   }
 };
+
+export const getUserProductWishlist = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const user = await User.findById(_id).populate("wishlist");
+    res.status(200).json(user);
+  } catch (e) {
+    console.error(e);
+    next(createError(500, "Problemw while fetching user wishlist"));
+  }
+};

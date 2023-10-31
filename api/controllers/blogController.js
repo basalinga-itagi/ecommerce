@@ -1,6 +1,8 @@
 import Blog from "../models/Blog.js";
 import User from "../models/User.js";
+import cloudinaryImageUpload from "../utils/cloudinary.js";
 import { createError } from "../utils/error.js";
+import fs from "fs";
 
 export const createBlog = async (req, res, next) => {
   try {
@@ -93,6 +95,28 @@ export const likesBlog = async (req, res, next) => {
 };
 
 export const uploadBlogImages = async (req, res, next) => {
-  try {
-  } catch (err) {}
+  const { id } = req.params;
+  const files = req.files;
+  // console.log(files);
+  const urls = [];
+  const uploader = (path) => cloudinaryImageUpload(path, "images");
+  for (const file of files) {
+    const { path } = file;
+    const newPath = await uploader(path);
+    urls.push(newPath);
+    fs.unlinkSync(path);
+  }
+
+  const findProduct = await Blog.findByIdAndUpdate(
+    id,
+    {
+      images: urls.map((file) => {
+        return file;
+      }),
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(200).json(findProduct);
 };

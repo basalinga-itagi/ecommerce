@@ -207,6 +207,7 @@ export const uploadImages = async (req, res, next) => {
     urls.push(newPath);
     fs.unlinkSync(path);
   }
+
   const findProduct = await Product.findByIdAndUpdate(
     id,
     {
