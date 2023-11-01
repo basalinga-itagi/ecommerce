@@ -10,7 +10,7 @@ const userSchema = new Schema(
     mobile: { type: String, required: true, unique: true },
     password: { type: String, required: true, minLength: 6 },
     role: { type: String, default: "user" },
-    cart: { type: Array, default: [] },
+    cart: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     isBlocked: { type: Boolean, default: false },
     address: { type: String },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
